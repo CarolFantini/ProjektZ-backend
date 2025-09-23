@@ -32,7 +32,6 @@ namespace Infrastructure.DependencyInjection
 
         private static IServiceCollection RegisterServices(this IServiceCollection services)
         {
-            services.AddScoped<IReadingJournalService, ReadingJournalService>();
             services.AddScoped<IHouseholdBudgetService, HouseholdBudgetService>();
 
             return services;
@@ -83,7 +82,8 @@ namespace Infrastructure.DependencyInjection
 
         private static IServiceCollection RegisterRepositories(this IServiceCollection services)
         {
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IHouseholdBudgetRepository, HouseholdBudgetRepository>();
+            services.AddScoped<IReadingJournalRepository, ReadingJournalRepository>();
 
             return services;
         }

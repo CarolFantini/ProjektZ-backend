@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Interfaces;
+using Domain.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ProjektZ.Controllers
 {
@@ -6,62 +8,113 @@ namespace ProjektZ.Controllers
     [Route("[controller]")]
     public class ReadingJournalController : ControllerBase
     {
-        [HttpGet]
-        [Route("index")]
-        public ActionResult Index()
+        private readonly IReadingJournalRepository _iReadingJournalRepository;
+
+        public ReadingJournalController(IReadingJournalRepository iReadingJournalRepository)
         {
-            return Ok();
+            _iReadingJournalRepository = iReadingJournalRepository;
         }
 
         [HttpGet]
-        [Route("details")]
-        public IActionResult Details(int id)
-        {
-            return Ok("Details");
-        }
-
-        [HttpPost]
-        [Route("create")]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        [Route("getall-books")]
+        public async Task<IActionResult> GetAllBooks()
         {
             try
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return Ok();
-            }
-        }
+                var result = await _iReadingJournalRepository.GetAllBooksAsync();
 
-        [HttpPost]
-        [Route("edit")]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
+                if (result.Count() <= 0)
+                {
+                    return StatusCode(500, "An error occurred while retrieving the books.");
+                }
+
                 return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
             }
         }
 
         [HttpPost]
-        [Route("delete")]
+        [Route("create-book")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> CreateBook([FromBody] Book book)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
+                var model = new Book
+                {
+                    Name = book.Name,
+                    Author = book.Author,
+                    Pages = book.Pages,
+                    CurrentPage = book.CurrentPage,
+                    StartDate = book.StartDate,
+                    EndDate = book.EndDate,
+                    Genre = book.Genre,
+                    Language = book.Language,
+                    Publisher = book.Publisher,
+                    Format = book.Format,
+                    Description = book.Description,
+                    Rating = book.Rating,
+                    Status = book.Status,
+                    Price = book.Price,
+                    Series = book.Series
+                };
+
+                var result = await _iReadingJournalRepository.AddBookAsync(model);
+
+                if (!result)
+                {
+                    return StatusCode(500, "An error occurred while saving the book.");
+                }
+
                 return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPatch]
+        [Route("edit-book")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditBook([FromBody] Book bookToUpdate)
+        {
+            try
+            {
+                var model = new Book
+                {
+                    Name = bookToUpdate.Name,
+                    Author = bookToUpdate.Author,
+                    Pages = bookToUpdate.Pages,
+                    CurrentPage = bookToUpdate.CurrentPage,
+                    StartDate = bookToUpdate.StartDate,
+                    EndDate = bookToUpdate.EndDate,
+                    Genre = bookToUpdate.Genre,
+                    Language = bookToUpdate.Language,
+                    Publisher = bookToUpdate.Publisher,
+                    Format = bookToUpdate.Format,
+                    Description = bookToUpdate.Description,
+                    Rating = bookToUpdate.Rating,
+                    Status = bookToUpdate.Status,
+                    Price = bookToUpdate.Price,
+                    Series = bookToUpdate.Series
+                };
+
+                var result = await _iReadingJournalRepository.UpdateBookAsync(model);
+
+                if (!result)
+                {
+                    return StatusCode(500, "An error occurred while editing the book.");
+                }
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
             }
         }
     }

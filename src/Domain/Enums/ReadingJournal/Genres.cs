@@ -1,0 +1,30 @@
+﻿namespace Domain.Enums.ReadingJournal
+{
+    public enum Genres
+    {
+        Fiction,
+        NonFiction,
+        Mystery,
+        Thriller,
+        Romance,
+        ScienceFiction,
+        Fantasy,
+        Biography,
+        History,
+        SelfHelp,
+        Health,
+        Travel,
+        Children,
+        YoungAdult,
+        Poetry,
+        Classics,
+        Horror,
+        GraphicNovel,
+        Religion,
+        Spirituality,
+        Science,
+        Technology,
+        Art,
+        Cooking
+    }
+}
