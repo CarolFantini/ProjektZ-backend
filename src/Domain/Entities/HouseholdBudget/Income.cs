@@ -2,13 +2,16 @@
 {
     public class Income
     {
+        public int Id { get; set; }
+        public bool IsActive { get; set; }
         public string CompanyName { get; init; } = string.Empty;
-        public decimal GrossSalary { get; init; }
+        public decimal GrossSalary { get; set; }
         public int WorkingHoursPerMonth { get; init; }
         public int WorkingDaysPerMonth { get; init; }
-        public decimal VAorVR { get; init; }
-        public decimal PLR { get; init; }
-        public DateTime CreatedAt { get; init; }
+        public decimal VAorVR { get; set; }
+        public decimal PLR { get; set; }
+        public DateOnly CreatedAt { get; init; }
+        public DateOnly UpdateAt { get; set; }
         public decimal NetSalary => GrossSalary - INSSDiscount - IRDiscount;
         public decimal GSperHour => WorkingHoursPerMonth == 0 ? 0 : GrossSalary / WorkingHoursPerMonth;
         public decimal GSperDay => WorkingDaysPerMonth == 0 ? 0 : GrossSalary / WorkingDaysPerMonth;
