@@ -10,21 +10,17 @@ namespace Infrastructure.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>().HasKey(c => c.Id);
+            modelBuilder.Entity<Book>().HasKey(c => c.Id);
 
-            modelBuilder.Entity<User>(entity =>
+            modelBuilder.Entity<Book>(entity =>
             {
-                entity.Property(e => e.Email)
-                    .IsRequired();
-                entity.Property(e => e.Password)
-                    .IsRequired();
-                entity.Property(e => e.CreatedAt)
+                entity.Property(e => e.Author)
                     .IsRequired();
             });
         }
 
-        public DbSet<User> Users { get; set; }
         public DbSet<Income> Incomes { get; set; }
         public DbSet<Expense> Expenses { get; set; }
+        public DbSet<Book> Books { get; set; }
     }
 }

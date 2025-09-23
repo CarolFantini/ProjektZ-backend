@@ -20,11 +20,11 @@ namespace ProjektZ.Controllers
 
         [HttpGet]
         [Route("getall-incomes")]
-        public IActionResult GetAllIncomes()
+        public async Task<IActionResult> GetAllIncomes()
         {
             try
             {
-                var result = _iHouseholdBudgetRepository.GetAllIncomesAsync().Result;
+                var result = await _iHouseholdBudgetRepository.GetAllIncomesAsync();
 
                 if (result.Count() <= 0)
                 {
@@ -42,7 +42,7 @@ namespace ProjektZ.Controllers
         [HttpPost]
         [Route("create-income")]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateIncome([FromBody] Income income) // ou [FromForm]
+        public async Task<IActionResult> CreateIncome([FromBody] Income income) // ou [FromForm]
         {
             try
             {
@@ -57,9 +57,9 @@ namespace ProjektZ.Controllers
                     CreatedAt = DateOnly.FromDateTime(DateTime.Now)
                 };
 
-                var incomeCalculated = _iHouseholdBudgetService.CalculateDiscounts(model).Result;
+                var incomeCalculated = await _iHouseholdBudgetService.CalculateDiscounts(model);
 
-                var result = _iHouseholdBudgetRepository.AddIncomeAsync(incomeCalculated).Result;
+                var result = await _iHouseholdBudgetRepository.AddIncomeAsync(incomeCalculated);
 
                 if (!result)
                 {
@@ -74,10 +74,10 @@ namespace ProjektZ.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPatch]
         [Route("edit-income")]
         [ValidateAntiForgeryToken]
-        public ActionResult EditIncome([FromBody] Income incomeToUpdate)
+        public async Task<IActionResult> EditIncome([FromBody] Income incomeToUpdate)
         {
             try
             {
@@ -91,9 +91,9 @@ namespace ProjektZ.Controllers
                     PLR = incomeToUpdate.PLR
                 };
 
-                incomeToUpdate = _iHouseholdBudgetService.CalculateDiscounts(model).Result;
+                incomeToUpdate = await _iHouseholdBudgetService.CalculateDiscounts(model);
 
-                var result = _iHouseholdBudgetRepository.UpdateIncomeAsync(incomeToUpdate).Result;
+                var result = await _iHouseholdBudgetRepository.UpdateIncomeAsync(incomeToUpdate);
 
                 if (!result)
                 {
@@ -111,13 +111,13 @@ namespace ProjektZ.Controllers
         [HttpPost]
         [Route("disable-income")]
         [ValidateAntiForgeryToken]
-        public ActionResult DisableIncome(int id)
+        public async Task<IActionResult> DisableIncome(int id)
         {
             try
             {
-                var income = _iHouseholdBudgetRepository.FindIncomeById(id).Result;
+                var income = await _iHouseholdBudgetRepository.FindIncomeById(id);
 
-                var result = _iHouseholdBudgetRepository.DisableIncomeAsync(income).Result;
+                var result = await _iHouseholdBudgetRepository.DisableIncomeAsync(income);
 
                 if (!result)
                 {
@@ -134,11 +134,11 @@ namespace ProjektZ.Controllers
 
         [HttpGet]
         [Route("getall-expenses")]
-        public IActionResult GetAllExpenses()
+        public async Task<IActionResult> GetAllExpenses()
         {
             try
             {
-                var result = _iHouseholdBudgetRepository.GetAllExpensesAsync().Result;
+                var result = await _iHouseholdBudgetRepository.GetAllExpensesAsync();
 
                 if (result.Count() <= 0)
                 {
@@ -156,7 +156,7 @@ namespace ProjektZ.Controllers
         [HttpPost]
         [Route("create-expense")]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateExpense([FromBody] Expense expense) // ou [FromForm]
+        public async Task<IActionResult> CreateExpense([FromBody] Expense expense)
         {
             try
             {
@@ -174,7 +174,7 @@ namespace ProjektZ.Controllers
                     CreatedAt = DateOnly.FromDateTime(DateTime.Now)
                 };
 
-                var result = _iHouseholdBudgetRepository.AddExpenseAsync(model).Result;
+                var result = await _iHouseholdBudgetRepository.AddExpenseAsync(model);
 
                 if (!result)
                 {
@@ -189,10 +189,10 @@ namespace ProjektZ.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPatch]
         [Route("edit-expense")]
         [ValidateAntiForgeryToken]
-        public ActionResult EditExpense([FromBody] Expense expenseToUpdate)
+        public async Task<IActionResult> EditExpense([FromBody] Expense expenseToUpdate)
         {
             try
             {
@@ -209,7 +209,7 @@ namespace ProjektZ.Controllers
                     InstallmentCount = expenseToUpdate.InstallmentCount,
                 };
 
-                var result = _iHouseholdBudgetRepository.UpdateExpenseAsync(expenseToUpdate).Result;
+                var result = await _iHouseholdBudgetRepository.UpdateExpenseAsync(expenseToUpdate);
 
                 if (!result)
                 {
@@ -227,13 +227,13 @@ namespace ProjektZ.Controllers
         [HttpPost]
         [Route("disable-expense")]
         [ValidateAntiForgeryToken]
-        public ActionResult DisableExpense(int id)
+        public async Task<IActionResult> DisableExpense(int id)
         {
             try
             {
-                var expense = _iHouseholdBudgetRepository.FindExpenseById(id).Result;
+                var expense = await _iHouseholdBudgetRepository.FindExpenseById(id);
 
-                var result = _iHouseholdBudgetRepository.DisableExpenseAsync(expense).Result;
+                var result = await _iHouseholdBudgetRepository.DisableExpenseAsync(expense);
 
                 if (!result)
                 {
