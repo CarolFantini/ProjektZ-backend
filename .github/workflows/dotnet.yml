@@ -27,19 +27,19 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore ProjektZ.sln
 
       - name: Build
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build ProjektZ.sln --no-restore --configuration Release
 
       - name: Test
-        run: dotnet test --no-build --verbosity normal --configuration Release
+        run: dotnet test ProjektZ.sln --no-build --verbosity normal --configuration Release
 
       - name: Publish
-        run: dotnet publish --no-build --configuration Release -o ./publish
+        run: dotnet publish ProjektZ.sln --no-build --configuration Release -o ./publish
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MyApp
+          name: ProjektZ
           path: src/publish
