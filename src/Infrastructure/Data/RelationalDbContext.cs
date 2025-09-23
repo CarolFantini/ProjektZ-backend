@@ -1,36 +1,30 @@
-﻿using Application.Interfaces;
+﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data
 {
-    public class RelationalDbContext : DbContext, IDatabaseContext
+    public class RelationalDbContext : DbContext
     {
         public RelationalDbContext(DbContextOptions<RelationalDbContext> options)
             : base(options) { }
 
-        public DbSet<T> Set<T>() where T : class => base.Set<T>();
-
-        public async Task<List<T>> GetAllAsync<T>(string? collectionName = null) where T : class
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            return await Set<T>().ToListAsync();
+            modelBuilder.Entity<User>().HasKey(c => c.Id);
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.Property(e => e.Email)
+                    .IsRequired();
+                entity.Property(e => e.Password)
+                    .IsRequired();
+                entity.Property(e => e.CreatedAt)
+                    .IsRequired();
+            });
         }
 
-        public async Task AddAsync<T>(T entity, string? collectionName = null) where T : class
-        {
-            await Set<T>().AddAsync(entity);
-            await SaveChangesAsync();
-        }
-
-        public async Task UpdateAsync<T>(T entity, string? collectionName = null) where T : class
-        {
-            Set<T>().Update(entity);
-            await SaveChangesAsync();
-        }
-
-        public async Task DeleteAsync<T>(T entity, string? collectionName = null) where T : class
-        {
-            Set<T>().Remove(entity);
-            await SaveChangesAsync();
-        }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Income> Incomes { get; set; }
+        public DbSet<Expense> Expenses { get; set; }
     }
 }

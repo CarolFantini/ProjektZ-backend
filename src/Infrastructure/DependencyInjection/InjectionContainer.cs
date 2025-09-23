@@ -55,9 +55,6 @@ namespace Infrastructure.DependencyInjection
                         options.UseNpgsql(connectionStringSettings.Database,
                             b => b.MigrationsAssembly(typeof(InjectionContainer).Assembly.FullName));
                 }, ServiceLifetime.Scoped);
-
-                services.AddScoped<IDatabaseContext>(sp =>
-                    sp.GetRequiredService<RelationalDbContext>());
             }
             else if (provider == "mongodb")
             {
@@ -70,7 +67,11 @@ namespace Infrastructure.DependencyInjection
                     return client.GetDatabase(connectionStringSettings.MongoDbName);
                 });
 
-                services.AddScoped<IDatabaseContext, MongoDbContext>();
+                services.AddScoped<MongoDbContext>(sp =>
+                {
+                    var database = sp.GetRequiredService<IMongoDatabase>();
+                    return new MongoDbContext(database);
+                });
             }
             else
             {

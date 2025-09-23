@@ -5,40 +5,54 @@ namespace Application.Services
 {
     public class HouseholdBudgetService : IHouseholdBudgetService
     {
-        private static readonly (decimal Limit, decimal Rate)[] InssBrackets = new[]
+        public Task<Income> CalculateDiscounts(Income income)
         {
-            (1412.00m, 0.075m),
-            (2666.68m, 0.09m),
-            (4000.03m, 0.12m),
-            (7786.02m, 0.14m)
-        };
+            CalculateINSSDiscount(income);
+            CalculateIRDiscount(income);
 
-        private decimal CalculateINSS(decimal grossSalary)
-        {
-            decimal discount = 0m;
-            decimal previousLimit = 0m;
-
-            foreach (var (limit, rate) in InssBrackets)
-            {
-                if (grossSalary > previousLimit)
-                {
-                    var taxable = Math.Min(grossSalary, limit) - previousLimit;
-                    discount += taxable * rate;
-                    previousLimit = limit;
-                }
-            }
-
-            return decimal.Round(discount, 2);
+            return Task.FromResult(income);
         }
 
-        public void CalculateINSSDiscount(Income income)
+        private void CalculateINSSDiscount(Income income)
         {
-            decimal inssDiscount = CalculateINSS(income.GrossSalary);
+            decimal grossSalary = income.GrossSalary;
+            decimal inssDiscount = 0m;
+
+            if (grossSalary <= 1412.00m)
+            {
+                inssDiscount = grossSalary * 0.075m;
+            }
+            else if (grossSalary <= 2666.68m)
+            {
+                inssDiscount = (1412.00m * 0.075m) +
+                               ((grossSalary - 1412.00m) * 0.09m);
+            }
+            else if (grossSalary <= 4000.03m)
+            {
+                inssDiscount = (1412.00m * 0.075m) +
+                               ((2666.68m - 1412.00m) * 0.09m) +
+                               ((grossSalary - 2666.68m) * 0.12m);
+            }
+            else if (grossSalary <= 7786.02m)
+            {
+                inssDiscount = (1412.00m * 0.075m) +
+                               ((2666.68m - 1412.00m) * 0.09m) +
+                               ((4000.03m - 2666.68m) * 0.12m) +
+                               ((grossSalary - 4000.03m) * 0.14m);
+            }
+            else
+            {
+                // Teto do INSS
+                inssDiscount = (1412.00m * 0.075m) +
+                               ((2666.68m - 1412.00m) * 0.09m) +
+                               ((4000.03m - 2666.68m) * 0.12m) +
+                               ((7786.02m - 4000.03m) * 0.14m);
+            }
 
             income.UpdateINSSDiscount(decimal.Round(inssDiscount, 2));
         }
 
-        public void CalculateIRDiscount(Income income)
+        private void CalculateIRDiscount(Income income)
         {
             decimal baseIR = income.GrossSalary - income.INSSDiscount;
             decimal irDiscount = 0m;

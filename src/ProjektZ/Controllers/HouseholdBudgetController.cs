@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Interfaces;
+using Domain.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ProjektZ.Controllers
 {
@@ -6,62 +8,127 @@ namespace ProjektZ.Controllers
     [Route("[controller]")]
     public class HouseholdBudgetController : ControllerBase
     {
-        [HttpGet]
-        [Route("index")]
-        public ActionResult Index()
+        private readonly IHouseholdBudgetService _iHouseholdBudgetService;
+        private readonly IHouseholdBudgetRepository _iHouseholdBudgetRepository;
+
+        public HouseholdBudgetController(IHouseholdBudgetService iHouseholdBudgetService, IHouseholdBudgetRepository iHouseholdBudgetRepository)
         {
-            return Ok();
+            _iHouseholdBudgetService = iHouseholdBudgetService;
+            _iHouseholdBudgetRepository = iHouseholdBudgetRepository;
+
         }
 
         [HttpGet]
-        [Route("details")]
-        public IActionResult Details(int id)
+        [Route("getall")]
+        public IActionResult GetAll()
         {
-            return Ok("Details");
+            try
+            {
+                var result = _iHouseholdBudgetRepository.GetAllAsync().Result;
+
+                if (result.Count() <= 0)
+                {
+                    return StatusCode(500, "An error occurred while retrieving the incomes.");
+                }
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpPost]
         [Route("create")]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create([FromBody] Income income) // ou [FromForm]
         {
             try
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
+                var model = new Income
+                {
+                    CompanyName = income.CompanyName,
+                    GrossSalary = income.GrossSalary,
+                    WorkingHoursPerMonth = income.WorkingHoursPerMonth,
+                    WorkingDaysPerMonth = income.WorkingDaysPerMonth,
+                    VAorVR = income.VAorVR,
+                    PLR = income.PLR,
+                    CreatedAt = DateTime.Now
+                };
+
+                var incomeCalculated = _iHouseholdBudgetService.CalculateDiscounts(model).Result;
+
+                var result = _iHouseholdBudgetRepository.AddAsync(incomeCalculated).Result;
+
+                if (!result)
+                {
+                    return StatusCode(500, "An error occurred while saving the income.");
+                }
+
                 return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
             }
         }
 
         [HttpPost]
         [Route("edit")]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, [FromBody] Income incomeToUpdate)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
+                var model = new Income
+                {
+                    CompanyName = incomeToUpdate.CompanyName,
+                    GrossSalary = incomeToUpdate.GrossSalary,
+                    WorkingHoursPerMonth = incomeToUpdate.WorkingHoursPerMonth,
+                    WorkingDaysPerMonth = incomeToUpdate.WorkingDaysPerMonth,
+                    VAorVR = incomeToUpdate.VAorVR,
+                    PLR = incomeToUpdate.PLR
+                };
+
+                incomeToUpdate = _iHouseholdBudgetService.CalculateDiscounts(model).Result;
+
+                var result = _iHouseholdBudgetRepository.UpdateAsync(incomeToUpdate).Result;
+
+                if (!result)
+                {
+                    return StatusCode(500, "An error occurred while editing the income.");
+                }
+
                 return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
             }
         }
 
         [HttpPost]
         [Route("delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
+                var income = _iHouseholdBudgetRepository.FindById(id).Result;
+
+                var result = _iHouseholdBudgetRepository.DeleteAsync(income).Result;
+
+                if (!result)
+                {
+                    return StatusCode(500, "An error occurred while deleting the income.");
+                }
+
                 return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
             }
         }
     }
