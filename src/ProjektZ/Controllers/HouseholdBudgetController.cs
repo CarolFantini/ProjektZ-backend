@@ -19,7 +19,7 @@ namespace ProjektZ.Controllers
         }
 
         [HttpGet]
-        [Route("getall-incomes")]
+        [Route("incomes/getall")]
         public async Task<IActionResult> GetAllIncomes()
         {
             try
@@ -40,8 +40,7 @@ namespace ProjektZ.Controllers
         }
 
         [HttpPost]
-        [Route("create-income")]
-        [ValidateAntiForgeryToken]
+        [Route("income/create")]
         public async Task<IActionResult> CreateIncome([FromBody] Income income) // ou [FromForm]
         {
             try
@@ -75,8 +74,7 @@ namespace ProjektZ.Controllers
         }
 
         [HttpPatch]
-        [Route("edit-income")]
-        [ValidateAntiForgeryToken]
+        [Route("income/edit")]
         public async Task<IActionResult> EditIncome([FromBody] Income incomeToUpdate)
         {
             try
@@ -108,9 +106,8 @@ namespace ProjektZ.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("disable-income")]
-        [ValidateAntiForgeryToken]
+        [HttpPatch]
+        [Route("income/disable")]
         public async Task<IActionResult> DisableIncome(int id)
         {
             try
@@ -133,7 +130,7 @@ namespace ProjektZ.Controllers
         }
 
         [HttpGet]
-        [Route("getall-expenses")]
+        [Route("expenses/getall")]
         public async Task<IActionResult> GetAllExpenses()
         {
             try
@@ -154,8 +151,7 @@ namespace ProjektZ.Controllers
         }
 
         [HttpPost]
-        [Route("create-expense")]
-        [ValidateAntiForgeryToken]
+        [Route("expense/create")]
         public async Task<IActionResult> CreateExpense([FromBody] Expense expense)
         {
             try
@@ -190,8 +186,7 @@ namespace ProjektZ.Controllers
         }
 
         [HttpPatch]
-        [Route("edit-expense")]
-        [ValidateAntiForgeryToken]
+        [Route("expense/edit")]
         public async Task<IActionResult> EditExpense([FromBody] Expense expenseToUpdate)
         {
             try
@@ -224,9 +219,8 @@ namespace ProjektZ.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("disable-expense")]
-        [ValidateAntiForgeryToken]
+        [HttpPatch]
+        [Route("expense/disable")]
         public async Task<IActionResult> DisableExpense(int id)
         {
             try
