@@ -2,10 +2,9 @@
 {
     public enum Status
     {
-        InProgress,
-        Completed,
-        Paused,
-        Dropped,
-        ToRead
+        Finished = 1,
+        InProgress = 2,
+        Paused = 3,
+        ToRead = 4
     }
 }

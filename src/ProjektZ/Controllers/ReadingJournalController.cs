@@ -1,5 +1,5 @@
-﻿using Application.Interfaces;
-using Domain.Entities;
+﻿using Application.DTOs;
+using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ProjektZ.Controllers
@@ -9,26 +9,24 @@ namespace ProjektZ.Controllers
     public class ReadingJournalController : ControllerBase
     {
         private readonly IReadingJournalRepository _iReadingJournalRepository;
+        private readonly IReadingJournalService _iReadingJournalService;
 
-        public ReadingJournalController(IReadingJournalRepository iReadingJournalRepository)
+        public ReadingJournalController(IReadingJournalRepository iReadingJournalRepository, IReadingJournalService iReadingJournalService)
         {
             _iReadingJournalRepository = iReadingJournalRepository;
+            _iReadingJournalService = iReadingJournalService;
+
         }
 
         [HttpGet]
-        [Route("getall-books")]
+        [Route("books/getall")]
         public async Task<IActionResult> GetAllBooks()
         {
             try
             {
-                var result = await _iReadingJournalRepository.GetAllBooksAsync();
+                var result = await _iReadingJournalService.GetAllBooksAsync();
 
-                if (result.Count() <= 0)
-                {
-                    return StatusCode(500, "An error occurred while retrieving the books.");
-                }
-
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -37,39 +35,14 @@ namespace ProjektZ.Controllers
         }
 
         [HttpPost]
-        [Route("create-book")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateBook([FromBody] Book book)
+        [Route("book/create")]
+        public async Task<IActionResult> CreateBook([FromBody] BookDTO book)
         {
             try
             {
-                var model = new Book
-                {
-                    Name = book.Name,
-                    Author = book.Author,
-                    Pages = book.Pages,
-                    CurrentPage = book.CurrentPage,
-                    StartDate = book.StartDate,
-                    EndDate = book.EndDate,
-                    Genre = book.Genre,
-                    Language = book.Language,
-                    Publisher = book.Publisher,
-                    Format = book.Format,
-                    Description = book.Description,
-                    Rating = book.Rating,
-                    Status = book.Status,
-                    Price = book.Price,
-                    Series = book.Series
-                };
+                var result = await _iReadingJournalService.CreateBookAsync(book);
 
-                var result = await _iReadingJournalRepository.AddBookAsync(model);
-
-                if (!result)
-                {
-                    return StatusCode(500, "An error occurred while saving the book.");
-                }
-
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -78,39 +51,91 @@ namespace ProjektZ.Controllers
         }
 
         [HttpPatch]
-        [Route("edit-book")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditBook([FromBody] Book bookToUpdate)
+        [Route("book/edit")]
+        public async Task<IActionResult> EditBook([FromBody] BookDTO bookToUpdate)
         {
             try
             {
-                var model = new Book
-                {
-                    Name = bookToUpdate.Name,
-                    Author = bookToUpdate.Author,
-                    Pages = bookToUpdate.Pages,
-                    CurrentPage = bookToUpdate.CurrentPage,
-                    StartDate = bookToUpdate.StartDate,
-                    EndDate = bookToUpdate.EndDate,
-                    Genre = bookToUpdate.Genre,
-                    Language = bookToUpdate.Language,
-                    Publisher = bookToUpdate.Publisher,
-                    Format = bookToUpdate.Format,
-                    Description = bookToUpdate.Description,
-                    Rating = bookToUpdate.Rating,
-                    Status = bookToUpdate.Status,
-                    Price = bookToUpdate.Price,
-                    Series = bookToUpdate.Series
-                };
+                var result = await _iReadingJournalService.EditBookAsync(bookToUpdate.Id, bookToUpdate);
 
-                var result = await _iReadingJournalRepository.UpdateBookAsync(model);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
 
-                if (!result)
-                {
-                    return StatusCode(500, "An error occurred while editing the book.");
-                }
+        [HttpDelete("book/{id}")]
+        public async Task<IActionResult> DeleteBook(int id)
+        {
+            try
+            {
+                var result = await _iReadingJournalService.DeleteBookAsync(id);
 
-                return Ok();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("authors/getall")]
+        public async Task<IActionResult> GetAllAuthors()
+        {
+            try
+            {
+                var result = await _iReadingJournalService.GetAllAuthorsAsync();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("author/create")]
+        public async Task<IActionResult> CreateAuthor([FromBody] AuthorDTO authorDto)
+        {
+            try
+            {
+                var result = await _iReadingJournalService.CreateAuthorAsync(authorDto);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("series/getall")]
+        public async Task<IActionResult> GetAllSeries()
+        {
+            try
+            {
+                var result = await _iReadingJournalRepository.GetAllSeriesAsync();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("series/create")]
+        public async Task<IActionResult> CreateSeries([FromBody] string name)
+        {
+            try
+            {
+                var result = await _iReadingJournalService.CreateSeriesAsync(name);
+                return Ok(result);
             }
             catch (Exception ex)
             {

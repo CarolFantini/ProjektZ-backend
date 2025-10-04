@@ -33,6 +33,7 @@ namespace Infrastructure.DependencyInjection
         private static IServiceCollection RegisterServices(this IServiceCollection services)
         {
             services.AddScoped<IHouseholdBudgetService, HouseholdBudgetService>();
+            services.AddScoped<IReadingJournalService, ReadingJournalService>();
 
             return services;
         }
