@@ -1,7 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
-using Domain.Enums.ReadingJournal;
 
 namespace Application.Services
 {
@@ -87,44 +86,22 @@ namespace Application.Services
             if (book == null)
                 return false;
 
-            // Ao tentar inserir EndDate sem StartDate estar preenchida
-            if (!book.StartDate.HasValue && dto.EndDate.HasValue)
-            {
-                return false;
-            }
-
             book.Price = dto.Price;
+            book.CurrentPage = dto.CurrentPage;
             book.Description = dto.Description;
             book.Review = dto.Review;
+            book.Status = dto.Status;
             book.Genres = dto.Genres;
             book.Series = dto.Series != null
                 ? await _readingJournalRepository.FindSeriesById(dto.Series.Id)
                 : null;
-            book.StartDate = DateOnly.FromDateTime(dto.StartDate!.Value);
-
-            // Lógica inteligente de Finished
-            bool isCurrentPageFinished = dto.CurrentPage.HasValue && dto.CurrentPage.Value == book.Pages;
-            bool isStatusFinished = dto.Status == Status.Finished;
-            bool isEndDateSet = dto.EndDate.HasValue;
-
-            if (isCurrentPageFinished || isStatusFinished || isEndDateSet)
-            {
-                book.CurrentPage = book.Pages;
-                book.Status = Status.Finished;
-                book.EndDate = isEndDateSet ? DateOnly.FromDateTime(dto.EndDate!.Value) : DateOnly.FromDateTime(DateTime.Now);
-            }
-            else
-            {
-                book.CurrentPage = dto.CurrentPage ?? book.CurrentPage;
-                book.Status = dto.Status;
-                book.EndDate = isEndDateSet ? DateOnly.FromDateTime(dto.EndDate!.Value) : book.EndDate;
-            }
+            book.StartDate = dto.StartDate != null ? DateOnly.FromDateTime(dto.StartDate.Value) : null;
+            book.EndDate = dto.EndDate != null ? DateOnly.FromDateTime(dto.EndDate.Value) : null;
 
             var result = await _readingJournalRepository.UpdateBookAsync(book);
 
             return result != null;
         }
-
 
         public async Task<bool> DeleteBookAsync(int id)
         {

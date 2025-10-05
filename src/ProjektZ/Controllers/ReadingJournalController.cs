@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
+using Application.Validation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ProjektZ.Controllers
@@ -18,8 +19,7 @@ namespace ProjektZ.Controllers
 
         }
 
-        [HttpGet]
-        [Route("books/getall")]
+        [HttpGet("books/getall")]
         public async Task<IActionResult> GetAllBooks()
         {
             try
@@ -34,12 +34,19 @@ namespace ProjektZ.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("book/create")]
+        [HttpPost("book/create")]
         public async Task<IActionResult> CreateBook([FromBody] BookDTO book)
         {
             try
             {
+                var validator = new BookDTOValidator();
+                var results = validator.Validate(book);
+
+                if (!results.IsValid)
+                {
+                    return BadRequest(results.Errors);
+                }
+
                 var result = await _iReadingJournalService.CreateBookAsync(book);
 
                 return Ok(result);
@@ -50,12 +57,19 @@ namespace ProjektZ.Controllers
             }
         }
 
-        [HttpPatch]
-        [Route("book/edit")]
+        [HttpPatch("book/edit")]
         public async Task<IActionResult> EditBook([FromBody] BookDTO bookToUpdate)
         {
             try
             {
+                var validator = new BookDTOValidator();
+                var results = validator.Validate(bookToUpdate);
+
+                if (!results.IsValid)
+                {
+                    return BadRequest(results.Errors);
+                }
+
                 var result = await _iReadingJournalService.EditBookAsync(bookToUpdate.Id, bookToUpdate);
 
                 return Ok(result);
@@ -81,8 +95,7 @@ namespace ProjektZ.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("authors/getall")]
+        [HttpGet("authors/getall")]
         public async Task<IActionResult> GetAllAuthors()
         {
             try
@@ -97,12 +110,19 @@ namespace ProjektZ.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("author/create")]
+        [HttpPost("author/create")]
         public async Task<IActionResult> CreateAuthor([FromBody] AuthorDTO authorDto)
         {
             try
             {
+                var validator = new AuthorDTOValidator();
+                var results = validator.Validate(authorDto);
+
+                if (!results.IsValid)
+                {
+                    return BadRequest(results.Errors);
+                }
+
                 var result = await _iReadingJournalService.CreateAuthorAsync(authorDto);
 
                 return Ok(result);
@@ -113,8 +133,7 @@ namespace ProjektZ.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("series/getall")]
+        [HttpGet("series/getall")]
         public async Task<IActionResult> GetAllSeries()
         {
             try

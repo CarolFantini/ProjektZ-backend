@@ -18,8 +18,7 @@ namespace ProjektZ.Controllers
 
         }
 
-        [HttpGet]
-        [Route("incomes/getall")]
+        [HttpGet("incomes/getall")]
         public async Task<IActionResult> GetAllIncomes()
         {
             try
@@ -39,8 +38,7 @@ namespace ProjektZ.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("income/create")]
+        [HttpPost("income/create")]
         public async Task<IActionResult> CreateIncome([FromBody] Income income) // ou [FromForm]
         {
             try
@@ -73,8 +71,7 @@ namespace ProjektZ.Controllers
             }
         }
 
-        [HttpPatch]
-        [Route("income/edit")]
+        [HttpPatch("income/edit")]
         public async Task<IActionResult> EditIncome([FromBody] Income incomeToUpdate)
         {
             try
@@ -106,8 +103,7 @@ namespace ProjektZ.Controllers
             }
         }
 
-        [HttpPatch]
-        [Route("income/disable")]
+        [HttpPatch("income/disable")]
         public async Task<IActionResult> DisableIncome(int id)
         {
             try
@@ -129,8 +125,7 @@ namespace ProjektZ.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("expenses/getall")]
+        [HttpGet("expenses/getall")]
         public async Task<IActionResult> GetAllExpenses()
         {
             try
@@ -150,8 +145,7 @@ namespace ProjektZ.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("expense/create")]
+        [HttpPost("expense/create")]
         public async Task<IActionResult> CreateExpense([FromBody] Expense expense)
         {
             try
@@ -185,8 +179,7 @@ namespace ProjektZ.Controllers
             }
         }
 
-        [HttpPatch]
-        [Route("expense/edit")]
+        [HttpPatch("expense/edit")]
         public async Task<IActionResult> EditExpense([FromBody] Expense expenseToUpdate)
         {
             try
@@ -219,8 +212,7 @@ namespace ProjektZ.Controllers
             }
         }
 
-        [HttpPatch]
-        [Route("expense/disable")]
+        [HttpPatch("expense/disable")]
         public async Task<IActionResult> DisableExpense(int id)
         {
             try
